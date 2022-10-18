@@ -80,6 +80,8 @@ contract ReverseRecords {
         return r;
     }
 
+    // 根据单个域名，查询他们的解析记录
+    // key 的取值范围：https://ensuser.com/docs/ens-improvement-proposals/ensip-5-text-records.html    
     function getText(bytes32 node, string calldata key) public view  returns (string memory) {
         address resolverAddress = ens.resolver(node);
         if(resolverAddress != address(0x0)){
@@ -89,6 +91,7 @@ contract ReverseRecords {
         return '';
     }
 
+    // 给一组域名，返回他们的 nodes
     function getNodes(string[] memory names) public pure returns (bytes32[] memory r) {        
         r = new bytes32[](names.length);
         for(uint i = 0; i < names.length; i++) {
@@ -97,6 +100,7 @@ contract ReverseRecords {
         return r;
     }
 
+    // 给一个域名，返回这个域名的 node
     function getNode(string memory name) public pure returns (bytes32) {   
          return Namehash.namehash(name);     
     }
