@@ -20,7 +20,7 @@ contract ReverseRecords {
     }
 
     /**
-     * 根据组地址，返回他们反向解析的域名，同时正向也是正确匹配的
+     * Returns an array of string. If the given address does not have a reverse record or forward record setup, it returns an empty string.
      */
     function getNamesWithReverse(address[] calldata addresses) public view returns (string[] memory r) {
         r = new string[](addresses.length);
@@ -48,7 +48,7 @@ contract ReverseRecords {
     }
 
     /**
-     * 根据组地址，返回他们反向解析的域名，同时正向是否匹配不在乎，address => domain, 但是 domain 不一定 => address
+     * Returns an array of string, If the given addresshave a reverse record. whether forward record setup, dont care
      */
     function getNames(address[] calldata addresses) public view returns (string[] memory r) {
         r = new string[](addresses.length);
@@ -68,9 +68,9 @@ contract ReverseRecords {
     }
     
     /*
-     * nodes:  域名的 256编码
-     * 批量查询域名的，某一条解析记录
-     * key 的取值范围：https://ensuser.com/docs/ens-improvement-proposals/ensip-5-text-records.html
+     * nodes: keccak256(domain)
+     * According to the node array, query text parsing records.
+     * key from：https://ensuser.com/docs/ens-improvement-proposals/ensip-5-text-records.html
      */
     function getTexts(bytes32[] memory nodes, string calldata key)  public view returns (string[] memory r) {
         r = new string[](nodes.length);
@@ -80,9 +80,12 @@ contract ReverseRecords {
         return r;
     }
 
-    // 根据单个域名，查询他们的解析记录
-    // key 的取值范围：https://ensuser.com/docs/ens-improvement-proposals/ensip-5-text-records.html    
-    function getText(bytes32 node, string calldata key) public view  returns (string memory) {
+     /*
+     * nodes: keccak256(domain)
+     * According to the node query a single parsing record
+     * key from：https://ensuser.com/docs/ens-improvement-proposals/ensip-5-text-records.html
+     */    
+     function getText(bytes32 node, string calldata key) public view  returns (string memory) {
         address resolverAddress = ens.resolver(node);
         if(resolverAddress != address(0x0)){
             Resolver resolver = Resolver(resolverAddress);
@@ -91,7 +94,8 @@ contract ReverseRecords {
         return '';
     }
 
-    // 给一组域名，返回他们的 nodes
+    // According to the names arrary, returns an array of name node
+    // node = keccak256(name)    
     function getNodes(string[] memory names) public pure returns (bytes32[] memory r) {        
         r = new bytes32[](names.length);
         for(uint i = 0; i < names.length; i++) {
@@ -100,12 +104,12 @@ contract ReverseRecords {
         return r;
     }
 
-    // 给一个域名，返回这个域名的 node
+    // According to the name, return name node, node = keccak256(name)
     function getNode(string memory name) public pure returns (bytes32) {   
          return Namehash.namehash(name);     
     }
 
-    // 获取一组地址的反向解析的 node
+    // According to the address arrary, returns an array of address reverse node
     function getReverseNodes(address[] calldata addres) public pure returns (bytes32[] memory r) {       
         r = new bytes32[](addres.length);
         for(uint i = 0; i < addres.length; i++) {
@@ -114,7 +118,7 @@ contract ReverseRecords {
         return r;
     }
 
-    // 获取一个地址的反向解析的 node
+    // According to the address, return address reverse node
     function getReverseNode(address addr) public pure returns (bytes32) {        
         return keccak256(abi.encodePacked(ADDR_REVERSE_NODE, sha3HexAddress(addr)));
     }
